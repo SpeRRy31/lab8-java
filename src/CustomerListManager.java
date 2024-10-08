@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CustomerListManager implements CustomerManager{
     private String pathtxt= "src/customersList.txt";
@@ -88,11 +89,13 @@ public class CustomerListManager implements CustomerManager{
 
     //use stream and lamda rework at return collections<>
     public void printCustomersByName(String name){
-        for (Customer item : customerList) {
-            if (item.getName().equals(name)) {
-                System.out.println(item.toString());
-            }
-        }
+        customerList.stream().filter(customer -> customer.getName().equals(name))
+                .forEach(customer -> System.out.println(customer));
+//        for (Customer item : customerList) {
+//            if (item.getName().equals(name)) {
+//                System.out.println(item);
+//            }
+//        }
     }
     public void printCustomersByName(){
         System.out.println("input find name: ");
@@ -115,12 +118,16 @@ public class CustomerListManager implements CustomerManager{
     }
 
     public void printCustomersNullBalance(){
-        int count = 0;
-        for (Customer item : customerList) {
-            if (item.getBonusBalance() == 0){
-                System.out.println(item.toString());
-            }
-        }
+
+        customerList.stream().filter(customer -> customer.getBonusBalance() == 0)
+               .forEach(customer -> System.out.println(customer));
+        long count = customerList.stream().filter(customer -> customer.getBonusBalance() == 0).count();
+        System.out.println("Count customer with null balance: " + count);
+//        for (Customer item : customerList) {
+//            if (item.getBonusBalance() == 0){
+//                System.out.println(item.toString());
+//            }
+//        }
     }
 
     //-- ^ here ^
