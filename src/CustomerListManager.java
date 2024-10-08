@@ -105,11 +105,14 @@ public class CustomerListManager implements CustomerManager{
     }
 
     public void printCustomersBetweenBalanceRange(double min, double max){
-        for (Customer item : customerList) {
-            if (item.getBonusBalance() >= min && item.getBonusBalance() <= max){
-                System.out.println(item.toString());
-            }
-        }
+        customerList.stream().filter(customer -> customer.getBonusBalance() >= min && customer.getBonusBalance() <= max)
+                .forEach(customer -> System.out.println(customer));
+
+//        for (Customer item : customerList) {
+//            if (item.getBonusBalance() >= min && item.getBonusBalance() <= max){
+//                System.out.println(item.toString());
+//            }
+//        }
     }
     public void printCustomersBetweenBalanceRange(){
         Scanner s = new Scanner(System.in);
