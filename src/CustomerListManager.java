@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CustomerListManager implements CustomerManager{
@@ -87,7 +88,6 @@ public class CustomerListManager implements CustomerManager{
     }
 
 
-    //use stream and lamda rework at return collections<>
     public void printCustomersByName(String name){
         customerList.stream().filter(customer -> customer.getName().equals(name))
                 .forEach(customer -> System.out.println(customer));
@@ -133,7 +133,6 @@ public class CustomerListManager implements CustomerManager{
 //        }
     }
 
-    //-- ^ here ^
 
     public void saveToTxt(){
         try(FileWriter writer = new FileWriter(pathtxt, false))
@@ -257,41 +256,50 @@ public class CustomerListManager implements CustomerManager{
         removeCustomer(getCustomerByID(id));
     }
 
-    //remake to usage labmda and stream api
 
     public List<Customer> getCustomersSortedByBalanceSurnameName() {
-        List<Customer> sortedCustomers = new ArrayList<>(customerList);
 
-        sortedCustomers.sort(Comparator
-                .comparingDouble(Customer::getBonusBalance)
-                .thenComparing(Customer::getSurname)
-                .thenComparing(Customer::getName));
 
-        return sortedCustomers;
+//        sortedCustomers.sort(Comparator
+//                .comparingDouble(Customer::getBonusBalance)
+//                .thenComparing(Customer::getSurname)
+//                .thenComparing(Customer::getName));
+
+        return customerList.stream()
+                .sorted(Comparator
+                        .comparingDouble(Customer::getBonusBalance)
+                        .thenComparing(Customer::getSurname)
+                        .thenComparing(Customer::getName))
+                .collect(Collectors.toList());
     }
 
     public Set<Integer> getUniqueYearsOfBirth() {
-        Set<Integer> yearsOfBirth = new HashSet<>();
 
-        for (Customer customer : customerList) {
-            yearsOfBirth.add(customer.getYear());
-        }
+//        for (Customer customer : customerList) {
+//            yearsOfBirth.add(customer.getYear());
+//        }
 
-        return yearsOfBirth;
+        return customerList.stream()
+                .map(Customer::getYear)
+                .collect(Collectors.toSet());
     }
 
     public Map<Integer, Customer> getMaxBonusCustomerPerYear() {
-        Map<Integer, Customer> maxBonusPerYear = new HashMap<>();
 
-        for (Customer customer : customerList) {
-            int yearOfBirth = customer.getYear();
+//        for (Customer customer : customerList) {
+//            int yearOfBirth = customer.getYear();
+//
+//            if (!maxBonusPerYear.containsKey(yearOfBirth) || customer.getBonusBalance() > maxBonusPerYear.get(yearOfBirth).getBonusBalance()) {
+//                maxBonusPerYear.put(yearOfBirth, customer);
+//            }
+//        }
 
-            if (!maxBonusPerYear.containsKey(yearOfBirth) || customer.getBonusBalance() > maxBonusPerYear.get(yearOfBirth).getBonusBalance()) {
-                maxBonusPerYear.put(yearOfBirth, customer);
-            }
-        }
-
-        return maxBonusPerYear;
+        return customerList.stream()
+                .collect(Collectors.toMap(
+                        Customer::getYear,
+                        customer -> customer,
+                        (existing, replacement) -> replacement.getBonusBalance() > existing.getBonusBalance() ? replacement : existing // gpt idea
+                ));
     }
 
     //-- ^ here ^
